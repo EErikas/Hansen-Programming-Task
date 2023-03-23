@@ -18,7 +18,7 @@ Tough, Soft, Tough, Tough and Soft.
 ```
 You can also ask for a hint if you need a reminder of what positional arguments are needed by calling 
 ```
-python main.py
+python main.py -h
 ```
 
 Once the script is launched, a log file called `main.log` is created in the project root, which stores errors that might occur during the launch of the script.
