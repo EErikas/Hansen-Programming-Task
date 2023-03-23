@@ -89,7 +89,11 @@ def map_characters(pattern_string: str, output_len: int) -> str:
     if len(pattern_string) == 0:
         view_message('An empty string has been passed to the function', log_only=True)
         return pattern_string
-
+    
+    if output_len < 1:
+        view_message(f'Inproper output length ({output_len}) provided', log_only=True)
+        return ''
+    
     # Get qoutient of length, or the number of times the string will be repeated in full
     full_copies = output_len // len(pattern_string)
     # Number of elements that need to be taken from the provided string
