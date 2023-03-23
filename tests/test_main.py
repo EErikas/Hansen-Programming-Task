@@ -101,7 +101,7 @@ class TestValidateInts(unittest.TestCase):
         self.patcher_stdout = patch('sys.stdout', self.stdout)
         self.addCleanup(self.patcher_stdout.stop)
         self.patcher_stdout.start()
-        
+
         self.error_msg = '{} is not valid number (should be integer greater than 0)'
 
     def test_valid_ints(self):
@@ -114,7 +114,7 @@ class TestValidateInts(unittest.TestCase):
         self.mock_logger.error.assert_called_with(error_msg)
         self.assertEqual(self.mock_logger.error.call_count, 1)
         self.assertEqual(self.stdout.getvalue().strip(), error_msg)
-        
+
     def test_invalid_ints_negative(self):
         invalid_ints = ['-1', '0', '8']
         self.assertEqual(validate_ints(invalid_ints), [])
@@ -122,7 +122,7 @@ class TestValidateInts(unittest.TestCase):
         self.mock_logger.error.assert_called_with(error_msg)
         self.assertEqual(self.mock_logger.error.call_count, 1)
         self.assertEqual(self.stdout.getvalue().strip(), error_msg)
-        
+
     def test_invalid_ints_string(self):
         invalid_ints = ['1', 'abc', '8']
         self.assertEqual(validate_ints(invalid_ints), [])
@@ -152,6 +152,8 @@ class TestMapCharacters(unittest.TestCase):
         self.addCleanup(self.patcher_log_error.stop)
         self.patcher_log_error.start()
 
+        self.error_msg = 'Inproper output length ({}) provided'
+
     def test_single_char_pattern(self):
         self.assertEqual(map_characters('S', 3), 'Soft, Soft and Soft.')
 
@@ -159,21 +161,37 @@ class TestMapCharacters(unittest.TestCase):
         self.assertEqual(map_characters('STTTS', 5),
                          'Soft, Tough, Tough, Tough and Soft.')
 
-    def test_pattern_length_greater_than_n(self):
+    def test_pattern_length_greater_than_output_length(self):
         self.assertEqual(map_characters('ST', 1), 'Soft.')
 
-    def test_pattern_length_divisible_by_n(self):
+    def test_pattern_length_divisible_by_output_length(self):
         self.assertEqual(map_characters('SSTT', 4),
                          'Soft, Soft, Tough and Tough.')
 
-    def test_pattern_length_not_divisible_by_n(self):
+    def test_pattern_length_not_divisible_by_output_length(self):
         self.assertEqual(map_characters('STTTS', 7),
                          'Soft, Tough, Tough, Tough, Soft, Soft and Tough.')
 
     def test_pattern_length_is_zero(self):
         self.assertEqual(map_characters('', 7), '')
-        self.mock_logger.error.assert_called_with('An empty string has been passed to the function')
+        self.mock_logger.error.assert_called_with(
+            'An empty string has been passed to the function')
         self.assertEqual(self.mock_logger.error.call_count, 1)
+
+    def test_output_length_is_zero(self):
+        number = 0
+        self.assertEqual(map_characters('SST', number), '')
+        self.mock_logger.error.assert_called_with(
+            self.error_msg.format(number))
+        self.assertEqual(self.mock_logger.error.call_count, 1)
+
+    def test_output_length_is_negative(self):
+        number = -10
+        self.assertEqual(map_characters('SST', number), '')
+        self.mock_logger.error.assert_called_with(
+            self.error_msg.format(number))
+        self.assertEqual(self.mock_logger.error.call_count, 1)
+
 
 if __name__ == '__main__':
     unittest.main()
